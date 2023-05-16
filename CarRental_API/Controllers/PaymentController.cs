@@ -21,6 +21,7 @@ namespace CarRental_API.Controllers
         [HttpPost]
         public async Task<ActionResult<Status>> MakePayment(string userId)
         {
+            //make payment
             var res = _payment.MakePayment(userId);
             return Ok(res);
         }
