@@ -44,7 +44,7 @@ namespace Data_Access_Layer.Repository
             if(isValid==false)
             {
                 _status.Result = new LoginResponseDTO();
-                _status.StatusCode = (int)HttpStatusCode.BadRequest;
+                _status.StatusCode = (int)HttpStatusCode.OK;
                 _status.Message = "Username or password is incorrect";
                 return _status;
 
@@ -77,7 +77,7 @@ namespace Data_Access_Layer.Repository
 
             if (loginResponse.Email == null || string.IsNullOrEmpty(loginResponse.Token))
             {
-                _status.StatusCode = (int)HttpStatusCode.BadRequest;
+                _status.StatusCode = (int)HttpStatusCode.OK;
                 _status.Message="Error while creating";
                 return _status;
             }
@@ -92,50 +92,54 @@ namespace Data_Access_Layer.Repository
         {
 
             ApplicationUser userFromDb = _db.ApplicationUsers.FirstOrDefault(u => u.UserName.ToLower() == model.UserName.ToLower());
-            if (userFromDb == null)
+            if (userFromDb != null)
             {
+                _status.StatusCode = (int)HttpStatusCode.BadRequest;
 
-                ApplicationUser newUser = new()
+                _status.Message = "Username already exists";
+                return _status;
+            }
+            ApplicationUser newUser = new()
+            {
+                UserName = model.UserName,
+                Email = model.UserName,
+                NormalizedEmail = model.UserName.ToUpper(),
+                Name = model.Name
+            };
+            try
+            {
+                var result = await _userManager.CreateAsync(newUser, model.Password);
+                if (result.Succeeded)
                 {
-                    UserName = model.UserName,
-                    Email = model.UserName,
-                    NormalizedEmail = model.UserName.ToUpper(),
-                    Name = model.Name
-                };
-                try
-                {
-                    var result = await _userManager.CreateAsync(newUser, model.Password);
-                    if (result.Succeeded)
+                    if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
                     {
-                        if (!_roleManager.RoleExistsAsync("admin").GetAwaiter().GetResult())
-                        {
-                            //create roles in database
-                            await _roleManager.CreateAsync(new IdentityRole("admin"));
-                            await _roleManager.CreateAsync(new IdentityRole("customer"));
-                        }
-                        if (model.Role.ToLower() == "admin")
-                        {
-                            await _userManager.AddToRoleAsync(newUser, "admin");
-                        }
-                        else
-                        {
-                            await _userManager.AddToRoleAsync(newUser, "customer");
-                        }
-                        _status.StatusCode=(int)HttpStatusCode.OK;
-                        _status.Message = "Registered successfully";
-                        return _status;
+                        //create roles in database
+                        await _roleManager.CreateAsync(new IdentityRole("admin"));
+                        await _roleManager.CreateAsync(new IdentityRole("customer"));
                     }
-
-                }
-                catch (Exception)
-                {
-                    _status.StatusCode = (int)HttpStatusCode.NotFound;
+                    if (model.Role.ToLower() == "admin")
+                    {
+                        await _userManager.AddToRoleAsync(newUser, "admin");
+                    }
+                    else
+                    {
+                        await _userManager.AddToRoleAsync(newUser, "customer");
+                    }
+                    _status.StatusCode = (int)HttpStatusCode.OK;
+                    _status.Message = "Registered successfully";
                     return _status;
                 }
-              
+
             }
+            catch (Exception)
+            {
+
+            }
+
             _status.StatusCode = (int)HttpStatusCode.BadRequest;
+            _status.Message = "Error while registering";
             return _status;
+        
 
         }
     }

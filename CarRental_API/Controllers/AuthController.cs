@@ -25,35 +25,35 @@ namespace CarRental_API.Controllers
 
 
         [HttpPost("login")]
-        public IActionResult Login([FromBody] LoginRequestDTO model)
+        public Task<Status> Login([FromBody] LoginRequestDTO model)
         {
 
             var res = _auth.Login(model);
 
-            return Ok(res);
+            return res;
         }
 
 
         [HttpPost("register")]
-        public ActionResult Register([FromBody] RegisterRequestDTO model)
+        public Task<Status> Register([FromBody] RegisterRequestDTO model)
         {
             var status = new Status();
             var userFromDb = _auth.Register(model);
 
-            if (userFromDb != true)
-            {
-                status.StatusCode = (int)HttpStatusCode.OK;
+            //if (userFromDb != null)
+            //{
+            //    status.StatusCode = (int)HttpStatusCode.OK;
 
-                status.Message = "Username already exists";
+            //    status.Message = "Username already exists";
 
-                return Ok(status);
+            //    return Ok(status);
 
-            }
+            //}
 
-            status.StatusCode = (int)HttpStatusCode.OK;
+            //status.StatusCode = (int)HttpStatusCode.OK;
 
-            status.Message = "Registered successfully";
-            return Ok(status);
+            //status.Message = "Registered successfully";
+            return userFromDb;
 
         }
     }

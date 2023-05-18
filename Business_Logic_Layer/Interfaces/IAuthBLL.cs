@@ -10,8 +10,8 @@ namespace Business_Logic_Layer.Interfaces
 {
     public interface IAuthBLL
     {
-        Status Login([FromBody] LoginRequestDTO model);
+        Task<Status> Login([FromBody] LoginRequestDTO model);
 
-        bool Register([FromBody] RegisterRequestDTO model);
+        Task<Status> Register([FromBody] RegisterRequestDTO model);
     }
 }

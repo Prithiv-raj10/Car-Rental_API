@@ -18,16 +18,16 @@ namespace Business_Logic_Layer.Services
 
             _authRepo = authRepo;
         }
-        public Status Login([FromBody] LoginRequestDTO model)
+        public Task<Status> Login([FromBody] LoginRequestDTO model)
         {
             //if(model == null) throw new ArgumentNullException("model");
-            var res = _authRepo.Login(model).Result;
+            var res = _authRepo.Login(model);
             return res;
         }
 
-        public bool Register([FromBody] RegisterRequestDTO model)
+        public Task<Status> Register([FromBody] RegisterRequestDTO model)
         {
-            var res = _authRepo.Register(model).Result;
+            var res = _authRepo.Register(model);
             return res;
         }
     }
