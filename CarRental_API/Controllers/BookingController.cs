@@ -27,10 +27,10 @@ namespace CarRental_API.Controllers
         }
 
         [HttpPost]
-        public Task<ActionResult<Status>> AddOrDelete(string userId, int carListId)
+        public Task<ActionResult<Status>> AddOrDelete(string userId, int carListId,int removeCar=0)
         {
 
-            var res = _booking.AddOrDelete(userId, carListId);
+            var res = _booking.AddOrDelete(userId, carListId,removeCar);
             return res;
         }
     }

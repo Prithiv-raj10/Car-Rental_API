@@ -66,7 +66,7 @@ namespace Data_Access_Layer.Repository
           
         }
 
-        public async Task<ActionResult<Status>> AddOrDelete(string userId, int carListId)
+        public async Task<ActionResult<Status>> AddOrDelete(string userId, int carListId, int removeCar)
         {
             Booking booking = _context.Bookings.Include(u => u.RentItems).FirstOrDefault(u => u.UserId == userId);
             CarList carList = _context.CarLists.FirstOrDefault(u => u.Id == carListId);
@@ -78,7 +78,7 @@ namespace Data_Access_Layer.Repository
             }
             if (booking == null)
             {
-                //create a shopping cart & add cart item
+                //create a booking
 
                 Booking newbooking = new() { UserId = userId };
                 _context.Bookings.Add(newbooking);
@@ -99,17 +99,27 @@ namespace Data_Access_Layer.Repository
             {
 
 
-                //RentItem cartItemInCart = booking.RentItems.FirstOrDefault(u => u.CarListId == carListId);
+                RentItem cartItemInCart = booking.RentItems.FirstOrDefault(u => u.CarListId == carListId);
 
-                //if (booking.RentItems.Count() == 1)
-                //{
-                //    _context.Bookings.Remove(booking);
-                //}
-                //_context.SaveChanges();
-                _status.Message = "Previous Booking is pending, complete to book a new car";
-                _status.StatusCode = (int)HttpStatusCode.OK;
+                if (booking.RentItems.Count() == 1 && removeCar == 1)
+                {
+                    _context.Bookings.Remove(booking);
+                    _context.RentItems.Remove(cartItemInCart);
+                    _status.Message = "Removed Car";
+                    _status.StatusCode= (int)HttpStatusCode.OK;
+                }
+                else
+                {
+                    _status.Message = "Previous Booking is pending, complete to book a new car";
+                    _status.StatusCode = (int)HttpStatusCode.OK;
+                }
+                _context.SaveChanges();
             }
             return _status;
+
+
+
+
 
         }
     }

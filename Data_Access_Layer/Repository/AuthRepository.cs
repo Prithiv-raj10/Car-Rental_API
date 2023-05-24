@@ -44,7 +44,7 @@ namespace Data_Access_Layer.Repository
             if(isValid==false)
             {
                 _status.Result = new LoginResponseDTO();
-                _status.StatusCode = (int)HttpStatusCode.OK;
+                _status.StatusCode = (int)HttpStatusCode.BadRequest;
                 _status.Message = "Username or password is incorrect";
                 return _status;
 

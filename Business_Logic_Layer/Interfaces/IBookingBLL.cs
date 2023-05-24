@@ -12,6 +12,6 @@ namespace Business_Logic_Layer.Interfaces
     {
         Task<ActionResult<Status>> GetBooking(string userId);
 
-        Task<ActionResult<Status>> AddOrDelete(string userId, int carListId);
+        Task<ActionResult<Status>> AddOrDelete(string userId, int carListId,int removeCar);
     }
 }

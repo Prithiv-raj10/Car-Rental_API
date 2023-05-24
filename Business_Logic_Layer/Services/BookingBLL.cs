@@ -23,9 +23,9 @@ namespace Business_Logic_Layer.Services
             var res = _bookingRepo.GetBooking(userId);
             return res;
         }
-        public Task<ActionResult<Status>> AddOrDelete(string userId, int carListId)
+        public Task<ActionResult<Status>> AddOrDelete(string userId, int carListId,int removeCar)
         {
-            var res = _bookingRepo.AddOrDelete(userId, carListId);
+            var res = _bookingRepo.AddOrDelete(userId, carListId,removeCar);
             return res;
         }
 

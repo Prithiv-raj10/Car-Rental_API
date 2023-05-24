@@ -11,7 +11,7 @@ namespace Data_Access_Layer.Interfaces
     public interface IBookingRepository
     {
         Task<ActionResult<Status>> GetBooking(string userId);
-        Task<ActionResult<Status>> AddOrDelete(string userId, int carListId);
+        Task<ActionResult<Status>> AddOrDelete(string userId, int carListId,int removeCar);
         
     }
 }
