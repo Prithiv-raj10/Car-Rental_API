@@ -11,7 +11,6 @@ namespace Data_Access_Layer.DTO
 {
     public class OrderHeaderCreateDTO
     {
-       
         [Required]
         public string PickupName { get; set; }
         [Required]
@@ -22,9 +21,6 @@ namespace Data_Access_Layer.DTO
         public string ApplicationUserId { get; set; }
 
         public double OrderTotal { get; set; }
-
-
-
         public string StripePaymentIntentID { get; set; }
         public string Status { get; set; }
         public IEnumerable<OrderDetailsCreateDTO> OrderDetailsDTO { get; set; }

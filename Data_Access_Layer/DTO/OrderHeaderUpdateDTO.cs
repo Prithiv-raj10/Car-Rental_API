@@ -11,7 +11,6 @@ namespace Data_Access_Layer.DTO
 {
     public class OrderHeaderUpdateDTO
     {
-      
         public int OrderHeaderId { get; set; }
         public string PickupName { get; set; }
         

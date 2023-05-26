@@ -12,8 +12,6 @@ namespace Data_Access_Layer.Models.DTO
 {
     public class CarListUpdateDTO
     {
-
-      
         public string? Name { get; set; }
         
         public string? Description { get; set; }

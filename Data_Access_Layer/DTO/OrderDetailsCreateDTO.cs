@@ -10,9 +10,7 @@ using System.Threading.Tasks;
 namespace Data_Access_Layer.DTO
 {
     public class OrderDetailsCreateDTO
-    {
-
-       
+    { 
         [Required]
         public int CarListId { get; set; }
 

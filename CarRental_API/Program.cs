@@ -11,6 +11,13 @@ using System.Text;
 
 var builder = WebApplication.CreateBuilder(args);
 
+//clear inbuild loggers
+builder.Logging.ClearProviders();
+
+// add log4net
+builder.Logging.AddLog4Net();
+builder.Logging.AddConsole();
+builder.Logging.AddDebug();
 // Add services to the container.
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
@@ -69,6 +76,8 @@ builder.Services.AddTransient<BookingBLL>();
 builder.Services.AddTransient<OrderBLL>();
 builder.Services.AddTransient<PaymentBLL>();
 builder.Services.AddSwaggerGen();
+
+log4net.Config.XmlConfigurator.Configure();
 
 var app = builder.Build();
 

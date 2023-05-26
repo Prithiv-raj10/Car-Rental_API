@@ -17,17 +17,19 @@ namespace CarRental_API.Controllers
     {
 
         private readonly IAuthBLL _auth;
-        public AuthController(IAuthBLL auth)
+        private readonly ILogger<AuthController> _logger;
+        public AuthController(IAuthBLL auth, ILogger<AuthController> logger)
         {
 
             this._auth = auth;
+            _logger = logger;
         }
 
 
         [HttpPost("login")]
         public Task<Status> Login([FromBody] LoginRequestDTO model)
         {
-
+            _logger.LogInformation("Login initiated by user");
             var res = _auth.Login(model);
 
             return res;

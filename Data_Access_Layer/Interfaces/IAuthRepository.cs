@@ -11,7 +11,6 @@ namespace Data_Access_Layer.Interfaces
     public interface IAuthRepository
     {
         Task<Status> Login([FromBody] LoginRequestDTO model);
-
         Task<Status> Register([FromBody] RegisterRequestDTO model);
     }
 }
