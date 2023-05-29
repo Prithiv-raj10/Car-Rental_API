@@ -6,6 +6,7 @@ using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.Collections.Generic;
@@ -23,16 +24,18 @@ namespace Data_Access_Layer.Repository
         private readonly ApplicationDbContext _db;
         private readonly UserManager<ApplicationUser> _userManager;
         private readonly RoleManager<IdentityRole> _roleManager;
+        private readonly ILogger<AuthRepository> _logger;
         private string secretKey;
         private Status _status;
         public AuthRepository(ApplicationDbContext db, IConfiguration configuration,
-            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
+            UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager,ILogger<AuthRepository> logger)
         {
             _db = db;
             _status = new Status();
             secretKey = configuration.GetValue<string>("ApiSettings:Secret");
             _userManager = userManager;
             _roleManager = roleManager;
+            _logger = logger;
         }
         public async Task<Status> Login([FromBody] LoginRequestDTO model)
         {
@@ -46,6 +49,7 @@ namespace Data_Access_Layer.Repository
                 _status.Result = new LoginResponseDTO();
                 _status.StatusCode = (int)HttpStatusCode.BadRequest;
                 _status.Message = "Username or password is incorrect";
+                _logger.LogInformation("Username or password is incorrect");
                 return _status;
 
             }
@@ -95,7 +99,7 @@ namespace Data_Access_Layer.Repository
             if (userFromDb != null)
             {
                 _status.StatusCode = (int)HttpStatusCode.BadRequest;
-
+                _logger.LogInformation("Username already exists");
                 _status.Message = "Username already exists";
                 return _status;
             }
@@ -127,17 +131,19 @@ namespace Data_Access_Layer.Repository
                     }
                     _status.StatusCode = (int)HttpStatusCode.OK;
                     _status.Message = "Registered successfully";
+                    _logger.LogInformation("Registration success");
                     return _status;
                 }
 
             }
             catch (Exception)
             {
-
+                throw new ArgumentException("unable to register");
             }
 
             _status.StatusCode = (int)HttpStatusCode.BadRequest;
             _status.Message = "Error while registering";
+            _logger.LogError("Error while registering");
             return _status;
         
 

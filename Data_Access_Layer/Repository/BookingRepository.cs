@@ -1,10 +1,11 @@
-﻿using Azure;
+﻿ using Azure;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -17,11 +18,13 @@ namespace Data_Access_Layer.Repository
     public class BookingRepository: IBookingRepository
     {
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<BookingRepository> _logger;
         protected Status _status;
        
-        public BookingRepository(ApplicationDbContext context)
+        public BookingRepository(ApplicationDbContext context, ILogger<BookingRepository> logger)
         {
             this._context = context;
+            _logger = logger;
             _status = new Status();
             
         }
@@ -45,6 +48,7 @@ namespace Data_Access_Layer.Repository
                 {
                     _status.StatusCode=(int)HttpStatusCode.OK;
                     _status.Message = "No booking done so far.";
+                    _logger.LogInformation("No booking done");
                 }
                 else if (booking.RentItems != null && booking.RentItems.Count > 0)
                 {
@@ -60,6 +64,7 @@ namespace Data_Access_Layer.Repository
             {
 
                 _status.Message = "Error";
+                _logger.LogError("Error on processing the request");
                 _status.StatusCode = (int)HttpStatusCode.BadRequest;
             }
             return _status;
@@ -74,6 +79,7 @@ namespace Data_Access_Layer.Repository
             {
                 _status.StatusCode = (int)HttpStatusCode.OK;
                 _status.Message = "No car id found";
+                _logger.LogInformation("No car with id {carListId} found", carListId);
                 return _status;
             }
             if (booking == null)
@@ -93,6 +99,7 @@ namespace Data_Access_Layer.Repository
                 _context.RentItems.Add(newRentItem);
                 _context.SaveChanges();
                 _status.Message = "Car Booked Successfully";
+                _logger.LogInformation("Car booked Successfully");
                 _status.StatusCode = (int)HttpStatusCode.OK;
             }
             else
@@ -106,11 +113,13 @@ namespace Data_Access_Layer.Repository
                     _context.Bookings.Remove(booking);
                     _context.RentItems.Remove(cartItemInCart);
                     _status.Message = "Removed Car";
+                    _logger.LogInformation("Removed car with id {carListId}", carListId);
                     _status.StatusCode= (int)HttpStatusCode.OK;
                 }
                 else
                 {
                     _status.Message = "Previous Booking is pending, complete to book a new car";
+                    _logger.LogInformation("Previous Booking is pending with user id {userId}", userId);
                     _status.StatusCode = (int)HttpStatusCode.OK;
                 }
                 _context.SaveChanges();

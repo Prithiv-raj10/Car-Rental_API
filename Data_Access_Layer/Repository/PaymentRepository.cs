@@ -4,6 +4,7 @@ using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
 using Stripe;
 using System;
 using System.Collections.Generic;
@@ -18,17 +19,20 @@ namespace Data_Access_Layer.Repository
     {
         protected Status _status;
         private readonly IConfiguration _congifuration;
+        private readonly ILogger<PaymentRepository> _logger;
         private readonly ApplicationDbContext _context;
-        public PaymentRepository(IConfiguration configuration, ApplicationDbContext context)
+        public PaymentRepository(IConfiguration configuration, ApplicationDbContext context,ILogger<PaymentRepository> logger)
         {
             _congifuration = configuration;
             _context = context;
+            _logger = logger;
             _status = new();
         }
 
         
         public async Task<ActionResult<Status>> MakePayment(string userId)
         {
+            _logger.LogDebug("Payment initiated by stripe");
             Booking booking = _context.Bookings.Include(u => u.RentItems)
                 .ThenInclude(u => u.CarList).FirstOrDefault(u => u.UserId == userId);
 
@@ -40,6 +44,7 @@ namespace Data_Access_Layer.Repository
 
             
             StripeConfiguration.ApiKey = _congifuration["StripeSettings:SecretKey"];
+            _logger.LogDebug("Stripe secret key generated");
             booking.Total = (double)booking.RentItems.Sum(u => u.CarList.Rent);
 
             PaymentIntentCreateOptions options = new()

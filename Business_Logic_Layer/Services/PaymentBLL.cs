@@ -2,6 +2,7 @@
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -13,14 +14,26 @@ namespace Business_Logic_Layer.Services
     public class PaymentBLL: IPaymentBLL
     {
         private readonly IPaymentRepository _paymentRepo;
-        public PaymentBLL(IPaymentRepository paymentRepo)
+        private readonly ILogger<PaymentBLL> _logger;
+        public PaymentBLL(IPaymentRepository paymentRepo,ILogger<PaymentBLL> logger)
         {
             _paymentRepo = paymentRepo;
+            _logger = logger;
         }
         public Task<ActionResult<Status>> MakePayment(string userId)
         {
-            var res = _paymentRepo.MakePayment(userId);
-            return res;
+            try
+            {
+                _logger.LogInformation("Attempting to make a payment for user ID {userId}", userId);
+                var res = _paymentRepo.MakePayment(userId);
+                return res;
+            }
+            catch (Exception ex)
+            {
+                _logger.LogError(ex, "An error occurred while making a payment for user ID {userId}", userId);
+                throw new ArgumentException("Payment processing failed");
+
+            }
         }
     }
 }

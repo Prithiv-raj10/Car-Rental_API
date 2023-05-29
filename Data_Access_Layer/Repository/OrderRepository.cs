@@ -5,6 +5,7 @@ using Data_Access_Layer.Models;
 using Data_Access_Layer.Models.DTO;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Logging;
 using System;
 using System.Collections.Generic;
 using System.Drawing.Printing;
@@ -19,11 +20,13 @@ namespace Data_Access_Layer.Repository
     {
 
         private readonly ApplicationDbContext _context;
+        private readonly ILogger<OrderRepository> _logger;
         protected Status _status;
 
-        public OrderRepository(ApplicationDbContext context)
+        public OrderRepository(ApplicationDbContext context,ILogger<OrderRepository> logger)
         {
             this._context = context;
+            _logger=logger;
             _status = new Status();
 
         }
@@ -36,7 +39,7 @@ namespace Data_Access_Layer.Repository
                     .ThenInclude(u => u.CarList)
                     .OrderByDescending(u => u.OrderHeaderId);
 
-
+                _logger.LogDebug("order request initiated by user id {userId}", userId);
 
                 if (!string.IsNullOrEmpty(userId))
                 {
@@ -79,6 +82,7 @@ namespace Data_Access_Layer.Repository
                 {
                     _status.StatusCode = (int)HttpStatusCode.NotFound;
                     _status.Message = "Not Found";
+                    _logger.LogInformation("Order with id {id} not found", id);
                     return (_status);
                 }
                 _status.Result = orderHeaders;
@@ -179,6 +183,7 @@ namespace Data_Access_Layer.Repository
                 }
                 _context.SaveChanges();
                 _status.StatusCode = (int)HttpStatusCode.OK;
+                _logger.LogInformation("Order updated for id {id}", id);
                 return _status;
 
 
