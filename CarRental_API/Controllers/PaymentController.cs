@@ -3,6 +3,7 @@ using Business_Logic_Layer.Services;
 using Data_Access_Layer.Migrations;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 
@@ -19,6 +20,7 @@ namespace CarRental_API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public async Task<ActionResult<Status>> MakePayment(string userId)
         {
             //make payment

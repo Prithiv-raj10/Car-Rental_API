@@ -3,6 +3,7 @@ using Business_Logic_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models;
 using Data_Access_Layer.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -45,6 +46,7 @@ namespace CarRental_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public ActionResult Add([FromForm] CarListCreateDTO model)
         {
             var status = new Status();
@@ -74,7 +76,7 @@ namespace CarRental_API.Controllers
 
 
         [HttpPut("{id}")]
-
+        [Authorize(Roles = "Admin")]
         public ActionResult Update(int id,[FromForm] CarListUpdateDTO model)
         {
             var status = new Status();
@@ -101,6 +103,7 @@ namespace CarRental_API.Controllers
 
 
         [HttpDelete]
+        [Authorize(Roles = "Admin")]
         public ActionResult Delete(int id)
         {
             var result = _product.RemoveCarById(id);

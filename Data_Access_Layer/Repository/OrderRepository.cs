@@ -131,7 +131,7 @@ namespace Data_Access_Layer.Repository
                     _context.SaveChanges();
                     _status.Result = order;
                     order.OrderDetails = null;
-                _status.StatusCode = (int)HttpStatusCode.OK;
+                _status.StatusCode = (int)HttpStatusCode.Created;
                 return (_status);
                 
             }

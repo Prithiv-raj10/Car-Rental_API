@@ -3,6 +3,7 @@ using Business_Logic_Layer.Interfaces;
 using Business_Logic_Layer.Services;
 using Data_Access_Layer.Interfaces;
 using Data_Access_Layer.Models.DTO;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 using System.Net;
 
@@ -19,7 +20,8 @@ namespace CarRental_API.Controllers
         }
 
         [HttpGet]
-        public Task<ActionResult<Status>> GetBooking(string userId)
+        [Authorize]
+        public Task<ActionResult<Status>> GetBooking(string? userId)
         {
             var res = _booking.GetBooking(userId);
 
@@ -27,6 +29,7 @@ namespace CarRental_API.Controllers
         }
 
         [HttpPost]
+        [Authorize]
         public Task<ActionResult<Status>> AddOrDelete(string userId, int carListId,int removeCar=0)
         {
 
